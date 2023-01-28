@@ -9,6 +9,8 @@ import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import logo from '../../assets/logo.svg';
 
+var validator = require("email-validator");
+
 
 export default function LoginForm() {
   const [showAlert, setShowAlert] = useState(false);
@@ -18,8 +20,32 @@ export default function LoginForm() {
     const email = data.get('email');
     const password = data.get('password');
 
-    // Add validation code here
+    if (password.length < 8) {
+      return false;
+    }
 
+    let no_upper = true;
+    let no_lower = true;
+    let no_num = true;
+    let no_special = true;
+    for (let char of password) {
+      if (char >= '0' && char <= '9') {
+        no_num = false;
+      } else if (char >= 'a' && char <= 'z') {
+        no_lower = false;
+      } else if (char >= 'A' && char <= 'Z') {
+        no_upper = false;
+      } else {
+        no_special = false;
+      }
+    }
+    if (no_upper || no_lower || no_num || no_special) {
+      return false;
+    }
+
+    // Add validation code here
+    return validator.validate(email)
+    
   }
 
   const handleSubmit = (event) => {
@@ -29,8 +55,10 @@ export default function LoginForm() {
       email: data.get('email'),
       password: data.get('password'),
     });
-    validateForm(event);
-    setShowAlert("Login Successful");
+    if (validateForm(event)) {
+      setShowAlert("Login Successful");
+    }
+    
   };
 
   return (
